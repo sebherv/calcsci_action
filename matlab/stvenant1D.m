@@ -14,9 +14,9 @@ alpha = 0.9;
 
 % Initialisation de u_n[i]: un step de niveau
 %hn = [ones(1,50) zeros(1,50)];
-hn = ones(1,100);
-hn(1)=2;
-%hn = [2*ones(1,50) ones(1,50)];
+%hn = ones(1,100);
+%hn(1)=2;
+hn = [ones(1,50) 0.10*ones(1,50)];
 hvn = zeros(1,100);
 
 u = [hn;hvn];
@@ -24,8 +24,7 @@ u = [hn;hvn];
 
 figure;
 hold on;
-plot(zeros(1,100));
-plot(u(1,:));
+
 
 step = 1;
 

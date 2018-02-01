@@ -64,7 +64,7 @@ while ( t < tmax)
     
     %Mettre à jour les bords
     u0n = u(:,1);
-    u0n(2) = 0;
+    u0n(2) = -u0n(2);
     uMn = u(:,end);
     uMn(2) = -uMn(2);
    
