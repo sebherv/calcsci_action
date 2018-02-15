@@ -3,7 +3,7 @@ function [ fx, fy ] = f(u)
 gr = 9.81;
 
 h = u(1);
-hu = u(2)
+hu = u(2);
 hv = u(3);
 
 huv = hu * hv / h;

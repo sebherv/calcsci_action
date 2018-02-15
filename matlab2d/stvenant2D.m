@@ -14,27 +14,32 @@ t = 0;
 alpha = 0.9;
 
 % Initialisation de u_n[i]
-hn = ones(1,N2)
+hn = ones(1,N2);
 hun = zeros(1,N2);
 hvn = zeros(1,N2);
 
 u = [hn;hun;hvn];
-figure;
-hold on;
 
 
-step = 1;
+step = 0.01;
 
 for n = 1 : 1000
-u = finiteVolume2d(u, a, b, c, step, alpha);
+    
+u = finiteVolume2d(u, a, b, c, step, alpha, N);
 pause(0.2)
 clf;
-hold on;
-plot(zeros(1,100));
-plot(2*ones(1,100));
-plot(u(1,:));
 
+x = linspace(a,b,N);
+y = linspace(a,b,N);
+[X,Y] = meshgrid(x,y);
 
+Z = [];
+for i = 1:N
+    Z = [Z; u(1,(i-1)*N+1:i*N)];
+end
+
+surf(X,Y,Z);
+hold on
 end;
 
 

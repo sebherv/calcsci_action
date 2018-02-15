@@ -6,8 +6,8 @@ gr = 9.81;
 h1 = uk(1);
 h2 = ul(1);
         
-[fu1x, fu1y] = f(u1);
-[fu2x, fu2y] = f(u2);
+[fu1x, fu1y] = f(uk);
+[fu2x, fu2y] = f(ul);
 
 if(nkl == 1)
     fu1 = fu1x;
@@ -27,7 +27,7 @@ l2 = abs( v1 + sqrt(gr*h1));
 l3 = abs( v2 - sqrt(gr*h2));
 l4 = abs( v2 + sqrt(gr*h2));
 c = max([l1 l2 l3 l4]);
-gi = 0.5*(fu1 + fu2) - c*(u2 - u1)/2;
+gi = 0.5*(fu1 + fu2) - c*(ul - uk)/2;
 
 
 end
