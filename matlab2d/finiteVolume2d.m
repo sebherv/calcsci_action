@@ -19,10 +19,10 @@ t=0;
 u = U0;
 
 % Conditions initiales au bord
-u0n = u(:,1:N);
-uMn = u(:,N:end);
-v0n = u(:,1:N); % TODO adapter avec les vrais bords
-vMn = u(:,N:end); % TODO adapter avec les vrais bords
+u0n = u(:,1:N);           % Bord vertical gauche
+uMn = u(:,(N*(N-1)):end); % Bord vertical droit
+v0n = u(:,1:N:end);       % Bord horizontal bas
+vMn = u(:,N:N:end);       % Bord horizontal haut
 
 
 
