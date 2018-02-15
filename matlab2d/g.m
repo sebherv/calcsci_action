@@ -17,7 +17,6 @@ else
     fu2 = fu2y;
 end
 
-
 % Compute the c for the current interface
 v1 = uk(2)/uk(1);
 v2 = ul(2)/ul(1);
@@ -27,8 +26,9 @@ l2 = abs( v1 + sqrt(gr*h1));
 l3 = abs( v2 - sqrt(gr*h2));
 l4 = abs( v2 + sqrt(gr*h2));
 c = max([l1 l2 l3 l4]);
-gi = 0.5*(fu1 + fu2) - c*(ul - uk)/2;
 
+
+gi = 0.5*(fu1 + fu2) - c*(ul - uk)/2;
 
 end
 
