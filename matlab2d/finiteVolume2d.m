@@ -18,13 +18,22 @@ t=0;
 % Init u
 u = U0;
 
-% Conditions initiales au bord
-u0n = u(:,1:N);           % Bord horizontal bas
-uMn = u(:,(N*(N-1)+1):end); % Bord horizontal haut
-v0n = u(:,1:N:end);       % Bord vertical gauche
-vMn = u(:,N:N:end);       % Bord vertical droit
+n = 0;   % l'index initial
 
-for i =1 : N
+while ( t < tmax)
+    % Calcul de Ln
+    L = 0;
+    B = zeros(M,NUMElem);
+    
+    
+        %Mettre à jour les bords
+    u0n = u(:,1:N);           % Bord horizontal bas
+    uMn = u(:,(N*(N-1)+1):end); % Bord horizontal haut
+    v0n = u(:,1:N:end);       % Bord vertical gauche
+    vMn = u(:,N:N:end);       % Bord vertical droit
+    
+
+    for i =1 : N
         %u0n(2,i) = -u0n(2,i);
         u0n(3,i) = -u0n(3,i);
         %uMn(2,i) = -uMn(2,i);
@@ -35,13 +44,6 @@ for i =1 : N
         %vMn(3,i) = -vMn(3,i);
     end
 
-n = 0;   % l'index initial
-
-while ( t < tmax)
-    % Calcul de Ln
-    L = 0;
-    B = zeros(M,NUMElem);
-    
     % Boucle sur les interfaces Internes
     for i = 0 : N-1
         for j = 1 : N
@@ -132,24 +134,6 @@ while ( t < tmax)
     % Boucle sur les mailles
     for i = 1:NUMElem
         u(:,i) = u(:,i) - dt*B(:,i)/deltax;
-    end;
-    
-    %Mettre à jour les bords
-    u0n = u(:,1:N);           % Bord horizontal bas
-    uMn = u(:,(N*(N-1)+1):end); % Bord horizontal haut
-    v0n = u(:,1:N:end);       % Bord vertical gauche
-    vMn = u(:,N:N:end);       % Bord vertical droit
-    
-
-for i =1 : N
-        %u0n(2,i) = -u0n(2,i);
-        u0n(3,i) = -u0n(3,i);
-        %uMn(2,i) = -uMn(2,i);
-        uMn(3,i) = -uMn(3,i);
-        v0n(2,i) = -v0n(2,i);
-        %v0n(3,i) = -v0n(3,i);
-        vMn(2,i) = -vMn(2,i);
-        %vMn(3,i) = -vMn(3,i);
     end
    
 
