@@ -3,8 +3,9 @@ clear; close all;
 
 % Discretisation
 
-N = 80;
+N = 40;
 N2 = N*N; % nombre de mailles "physiques"
+
 a = 0; % bord gauche du domaine
 b = 10; % bord droit du domaine
 c = b; % profondeur
@@ -19,25 +20,28 @@ alpha = 0.9;
 
 hn = ones(1,N2);
 
-% hn(N/4) = 50;
-% hn(N*3/4) = 50;
-hn(1:N) = 4;
+%hn(N/4) = 5;
+%hn(N*3/4) = 5;
+%hn(1:N) = 4;
 
 hun = zeros(1,N2);
 hvn = zeros(1,N2);
 
+hvn(1:N) = 5;
+
 u = [hn;hun;hvn];
 
+deltax = b-a/N;
 
 figure
 
-step = 0.05;
+step = 1;
 
 for n = 1 : 1000
     
     n
     
-u = finiteVolume2d(u, a, b, c, step, alpha, N);
+u = finiteVolume2d(u,step, alpha, N, N, deltax);
 pause(0.1)
 clf;
 
@@ -51,7 +55,7 @@ for i = 1:N
 end
 h = surf(X,Y,Z);
 zlim([0 2]);
-view(135+n*0.5,30)
+%view(135+n*0.5,30)
 shading interp
 
 hold on

@@ -1,4 +1,4 @@
-function [ U ] = finiteVolume2d( U0, a, b, c, tmax, alpha, N)
+function [ U ] = finiteVolume2d( U0, tmax, alpha, Nu, Nv, deltax)
 %FINITEVOLUME1D 
 %Effectue le calcul en volume fini avec le schema de rusanov en 1D avec les
 %arguments suivants:
@@ -8,11 +8,11 @@ function [ U ] = finiteVolume2d( U0, a, b, c, tmax, alpha, N)
 % - c: profondeur
 % - N: mailles par cote (suppose carre)
 % - tmax : le temps de simulation
-% - alpha: utilisï¿½ dans le calcul de la durï¿½e de pas.
+% - alpha: utilisé dans le calcul de la duree de pas.
 
-% Rï¿½cupï¿½rer le nombre de mailles
+% Recuperer le nombre de mailles
 [M,NUMElem] = size(U0);
-deltax = (b-a)/N;
+
 t=0;
 
 % Init u
@@ -27,30 +27,29 @@ while ( t < tmax)
     
     
         %Mettre Ã  jour les bords
-    u0n = u(:,1:N);           % Bord horizontal bas
-    uMn = u(:,(N*(N-1)+1):end); % Bord horizontal haut
-    v0n = u(:,1:N:end);       % Bord vertical gauche
-    vMn = u(:,N:N:end);       % Bord vertical droit
+    v0n = u(:,1:Nu);           % Bord horizontal bas
+    vMn = u(:,(Nu*(Nv-1)+1):end); % Bord horizontal haut
+    u0n = u(:,1:Nu:end);       % Bord vertical gauche
+    uMn = u(:,Nu:Nu:end);       % Bord vertical droit
     
 
-    for i =1 : N
-        %u0n(2,i) = -u0n(2,i);
-        u0n(3,i) = -u0n(3,i);
-        %uMn(2,i) = -uMn(2,i);
-        uMn(3,i) = -uMn(3,i);
-        v0n(2,i) = -v0n(2,i);
-        %v0n(3,i) = -v0n(3,i);
-        vMn(2,i) = -vMn(2,i);
-        %vMn(3,i) = -vMn(3,i);
+    for i =1 : Nv
+        u0n(2,i) = -u0n(2,i);
+        uMn(2,i) = -uMn(2,i);
+    end
+    
+    for i = 1 : Nu
+        v0n(3,i) = -v0n(3,i);
+        vMn(3,i) = -vMn(3,i);
     end
 
     % Boucle sur les interfaces Internes
-    for i = 0 : N-1
-        for j = 1 : N
+    for i = 0 : Nv-1
+        for j = 1 : Nu
             % Interface horizontale
-            if(j<N)
-                k = i*N+j;
-                l = i*N+j+1;
+            if(j<Nu)
+                k = i*Nu+j;
+                l = i*Nu+j+1;
                 u1 = u(:,k);
                 u2 = u(:,l);
         
@@ -67,9 +66,9 @@ while ( t < tmax)
            
             
             % Interface verticale
-            if(i<N-1)
-                k = i*N+j;
-                l = (i+1)*N+j;
+            if(i<Nv-1)
+                k = i*Nu+j;
+                l = (i+1)*Nu+j;
                 u1 = u(:,k);
                 u2 = u(:,l);
         
@@ -89,9 +88,9 @@ while ( t < tmax)
     % Boucle sur les interfaces Externes
     % A gauche
     
-    for i = 1 : N
-        %u0n = u(:,1:N); % Bord horizontal bas
-        uk = u0n(:,i);
+    for i = 1 : Nu
+        % Bord horizontal bas
+        uk = v0n(:,i);
         ul = u(:,i);
         
         [gi, c] = g(uk,ul, 2);
@@ -100,31 +99,31 @@ while ( t < tmax)
         
     end
     
-    for i = 1 : N
-        %uMn = u(:,(N*(N-1)):end); % Bord horizontal haut
-        uk = u(:,N*(N-1)+i);
-        ul = uMn(:,i);
+    for i = 1 : Nu
+        % Bord horizontal haut
+        uk = u(:,Nu*(Nv-1)+i);
+        ul = vMn(:,i);
         
         [gi, c] = g(uk,ul, 2);
-        B(:,N*(N-1)+i) = B(:,N*(N-1)+i) + gi;
+        B(:,Nu*(Nv-1)+i) = B(:,Nu*(Nv-1)+i) + gi;
     end
     
-    for i = 1 : N
-        %v0n = u(:,1:N:end);       % Bord vertical gauche
-        uk = v0n(:,i);
-        ul = u(:,1+(i-1)*N);
+    for i = 1 : Nv
+        % Bord vertical gauche
+        uk = u0n(:,i);
+        ul = u(:,1+(i-1)*Nu);
         
         [gi, c] = g(uk,ul, 1);
-        B(:,1+(i-1)*N) = B(:,1+(i-1)*N) - gi;
+        B(:,1+(i-1)*Nu) = B(:,1+(i-1)*Nu) - gi;
     end
 
-    for i = 1 : N
-        %vMn = u(:,N:N:end);       % Bord vertical droit
-        uk = u(:,N*i);
+    for i = 1 : Nv
+        % Bord vertical droit
+        uk = u(:,Nu*i);
         ul = uMn(:,i);
         
         [gi, c] = g(uk,ul, 1);
-        B(:,N*i) = B(:,N*i) + gi;
+        B(:,Nu*i) = B(:,Nu*i) + gi;
     end
 
     % Calcul de delta t
