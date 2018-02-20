@@ -1,3 +1,4 @@
+
 function [ gi, c ] = g( uk, ul, nkl )
 % Rusanov St Venant
 
@@ -24,6 +25,7 @@ v2 = ul(2)/ul(1);
 l1 = abs( v1 - sqrt(gr*h1));
 l2 = abs( v1 + sqrt(gr*h1));
 l3 = abs( v2 - sqrt(gr*h2));
+
 l4 = abs( v2 + sqrt(gr*h2));
 c = max([l1 l2 l3 l4]);
 

@@ -1,16 +1,26 @@
-function [ U ] = finiteVolume2d( U0, tmax, alpha, Nu, Nv, deltax)
+function [ U ] = finiteVolume2d( U0, tmax, tinit, alpha, Nu, Nv, deltax)
 %FINITEVOLUME1D 
 %Effectue le calcul en volume fini avec le schema de rusanov en 1D avec les
 %arguments suivants:
 % - U0: la liste des vecteurs initiaux
-% - a: la borne initiale du domaine
-% - b: la borne maximale du domaine
-% - c: profondeur
-% - N: mailles par cote (suppose carre)
 % - tmax : le temps de simulation
-% - alpha: utilisé dans le calcul de la duree de pas.
+% - tinit : temps initial
+% - alpha: utilisé dans le calcul de la duree de pas
+% - Nu: nombre de mailles dans la direction u
+% - Nv: nombre de mailles dans la direction v
+% - deltax: longueur côté maille (supposée carrée)
 
-% Recuperer le nombre de mailles
+%Recup configuration des bords
+global SV_REFLECT_TOP;
+global SV_REFLECT_BOTTOM;
+global SV_REFLECT_LEFT;
+global SV_REFLECT_RIGHT;
+
+global SV_DEBIT_U;
+global SV_DEBIT_V;
+
+global SV_FN_U0T;
+
 [M,NUMElem] = size(U0);
 
 t=0;
@@ -25,22 +35,41 @@ while ( t < tmax)
     L = 0;
     B = zeros(M,NUMElem);
     
-    
-        %Mettre Ã  jour les bords
+    %Mettre Ã  jour les bords
     v0n = u(:,1:Nu);           % Bord horizontal bas
     vMn = u(:,(Nu*(Nv-1)+1):end); % Bord horizontal haut
     u0n = u(:,1:Nu:end);       % Bord vertical gauche
     uMn = u(:,Nu:Nu:end);       % Bord vertical droit
     
-
+    
+    
     for i =1 : Nv
-        u0n(2,i) = -u0n(2,i);
-        uMn(2,i) = -uMn(2,i);
+        if SV_REFLECT_LEFT
+            u0n(2,i) = -u0n(2,i);
+        else
+            %u0n(1,i) = 1;
+            u0n(2,i) = SV_DEBIT_U;
+        end
+        
+        if SV_REFLECT_RIGHT
+            uMn(2,i) = -uMn(2,i);
+        else
+            uMn(2,i) = SV_DEBIT_U;
+        end
     end
     
     for i = 1 : Nu
-        v0n(3,i) = -v0n(3,i);
-        vMn(3,i) = -vMn(3,i);
+        if SV_REFLECT_BOTTOM
+            v0n(3,i) = -v0n(3,i);
+        else
+            v0n(3,i) = SV_DEBIT_V;
+        end
+        
+        if SV_REFLECT_TOP
+            vMn(3,i) = -vMn(3,i);
+        else
+            vMn(3,i) = SV_DEBIT_V;
+        end
     end
 
     % Boucle sur les interfaces Internes
