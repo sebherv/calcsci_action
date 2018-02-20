@@ -5,6 +5,8 @@ clear, close all;
 
 global SV_TITLE
 global SV_DROP_AT
+global SV_FN_PERFORM
+SV_FN_PERFORM = false;
 SV_TITLE = "Effet d'une goutte sur un écoulement à Fr = 1";
 SV_DROP_AT = 0.2;
 

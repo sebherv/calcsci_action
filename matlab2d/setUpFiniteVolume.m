@@ -61,18 +61,6 @@ alpha = 0.9;
 % Configurer le fluide
 hn = ones(1,N2);
 
-SV_DEBIT_U = du
-if du ~= 0.0
-    SV_REFLECT_LEFT = false;
-    SV_REFLECT_RIGHT = false;
-end
-
-SV_DEBIT_V = dv
-if dv ~= 0.0
-    SV_REFLECT_TOP = false;
-    SV_REFLECT_BOTTOM = false;
-end
-
 hun = du * ones(1,N2);
 hvn = dv * ones(1,N2);
 

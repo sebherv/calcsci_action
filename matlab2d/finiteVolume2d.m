@@ -20,7 +20,7 @@ global SV_DEBIT_U;
 global SV_DEBIT_V;
 
 global SV_FN_U0T;
-
+global SV_FN_PERFORM;
 [M,NUMElem] = size(U0);
 
 t=0;
@@ -41,14 +41,19 @@ while ( t < tmax)
     u0n = u(:,1:Nu:end);       % Bord vertical gauche
     uMn = u(:,Nu:Nu:end);       % Bord vertical droit
     
-    
+    if SV_FN_PERFORM
+        curImpulse = SV_FN_U0T(t+ tinit);
+    end
     
     for i =1 : Nv
         if SV_REFLECT_LEFT
             u0n(2,i) = -u0n(2,i);
         else
-            %u0n(1,i) = 1;
-            u0n(2,i) = SV_DEBIT_U;
+            if SV_FN_PERFORM
+                u0n(2,i) = curImpulse;
+            else
+                u0n(2,i) = SV_DEBIT_U;
+            end
         end
         
         if SV_REFLECT_RIGHT

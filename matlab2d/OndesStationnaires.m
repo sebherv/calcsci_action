@@ -9,8 +9,12 @@ SV_TITLE = "Effet d'une exitation sur un bord";
 
 
 global SV_FN_U0T
-SV_FN_U0T = @(t) 3* sin(10*t);
+global SV_FN_PERFORM
+SV_FN_PERFORM = true;
+SV_FN_U0T = @(t) -2*sin(2*pi*1.2*t);
 
+global SV_REFLECT_RIGHT
+SV_REFLECT_RIGHT = true;
 length = 20;
 width = 1;
 res = 10;
