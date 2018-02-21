@@ -1,90 +1,22 @@
-function [ output_args ] = setUpFiniteVolume( length, width, resolution, du, dv, tmax )
-%SETUPFINITEVOLUME 
-% Configure et démarre la simulation , affiche des données à l'écran
-% - lenght: longueur du domaine (m)
-% - width: largeur du domaine (m)
-% - resolution: mailles sur la largeur
-% - du: débit dans la direction u
-% - dv: débit dans la direction v
-% - tmax: durée maximale de la simulation
+% Demo to create a movie file from a Gaussian and then optionally save it to disk as an avi video file.
 
-
-% Vérifier la configuration des bords:
-global SV_REFLECT_TOP;
-global SV_REFLECT_BOTTOM;
-global SV_REFLECT_LEFT;
-global SV_REFLECT_RIGHT;
-
-global SV_DEBIT_U;
-global SV_DEBIT_V;
-
-global SV_TITLE;
-global SV_DROP_AT
-
-if ~exist('SV_REFLECT_TOP','var')
-    SV_REFLECT_TOP=true;
-end
-
-if ~exist('SV_REFLECT_BOTTOM','var')
-    SV_REFLECT_BOTTOM=true;
-end
-
-if ~exist('SV_REFLECT_LEFT','var')
-    SV_REFLECT_LEFT=true;
-end
-
-if ~exist('SV_REFLECT_RIGHT','var')
-    SV_REFLECT_RIGHT=true;
-end
-
-SV_DEBIT_U = du
-if du ~= 0.0
-    SV_REFLECT_LEFT = false;
-    SV_REFLECT_RIGHT = false;
-end
-
-SV_DEBIT_V = dv
-if dv ~= 0.0
-    SV_REFLECT_TOP = false;
-    SV_REFLECT_BOTTOM = false;
-end
-
-% Monter le domaine
-deltax = width / resolution;
-Nu = length / deltax;
-Nv = width / deltax;
-
-N2 = Nu * Nv
-
-alpha = 0.9;
-
-% Configurer le fluide
-hn = ones(1,N2);
-
-hun = du * ones(1,N2);
-hvn = dv * ones(1,N2);
-
-u = [hn;hun;hvn];
-
-t = 0;
-dt = 0.01;
-
-if exist('SV_DROP_AT', 'var')
-    drop_at = SV_DROP_AT;
-else
-    drop_at = tmax+1;
-end
-
-
-% Configurer le film
-numberOfFrames = tmax / dt;
+%==============================================================================================
+% Initialization code
+clear all;
+clc;
+workspace;
+numberOfFrames = 61;
+x1d = linspace(-3, 3, numberOfFrames);
+y1d = x1d;
+t = linspace(0, 5, numberOfFrames);
 hFigure = figure;
+
 % Set up the movie structure.
 % Preallocate movie, which will be an array of structures.
 % First get a cell array with all the frames.
 allTheFrames = cell(numberOfFrames,1);
-vidHeight = 1024;
-vidWidth = 1024;
+vidHeight = 344;
+vidWidth = 446;
 allTheFrames(:) = {zeros(vidHeight, vidWidth, 3, 'uint8')};
 % Next get a cell array with all the colormaps.
 allTheColorMaps = cell(numberOfFrames,1);
@@ -98,52 +30,29 @@ myMovie = struct('cdata', allTheFrames, 'colormap', allTheColorMaps);
 % openGL doesn't work and Painters is way too slow.
 set(gcf, 'renderer', 'zbuffer');
 
-frameIndex = 0;
-
-while t < tmax
-    
-    frameIndex = frameIndex + 1;
-    
-    if (t > drop_at -dt) & (t < drop_at + dt)
-        u(1, (Nv + 1) * Nu/2 ) = 5;
-    end
-    u = finiteVolume2dPilier(u,dt,t,alpha, Nu, Nv, deltax);
-    %pause(0.1)
-    t = t + dt
-    cla reset;
-
-    x = linspace(0,length,Nu);
-    y = linspace(0,width,Nv);
-    [X,Y] = meshgrid(x,y);
-    
-    Z = [];
-    PU = [];
-    PV = [];
-    for i = 1:Nv
-        Z = [Z; u(1,(i-1)*Nu+1:i*Nu)];
-        PU = [PU; u(2,(i-1)*Nu+1:i*Nu)];
-        PV = [PV; u(3,(i-1)*Nu+1:i*Nu)];
-    end
-    
-    hold on
-    h = surf(X,Y,Z);
-    axis('tight')
-    %quiver(X,Y,PU,PV);
-    zlim([0 2.5]);
-    daspect([1 1 1]);
-    %view(135- 30 * t,30-20 * sin(t))
-    %view(135,30)
-    shading interp
-    
-    title({SV_TITLE sprintf("t = %.2f s", t)});
-    
-    drawnow;
+%==============================================================================================
+% Create the movie.
+% Get a list of x and y coordinates for every pixel in the x-y plane.
+[x, y] = meshgrid(x1d, y1d);
+% After this loop starts, BE SURE NOT TO RESIZE THE WINDOW AS IT'S SHOWING THE FRAMES, or else you won't be able to save it.
+for frameIndex = 1 : numberOfFrames
+	z = exp(-(x-t(frameIndex)).^2-(y-t(frameIndex)).^2);
+	cla reset;
+	% Enlarge figure to full screen.
+% 	set(gcf, 'Units', 'Normalized', 'Outerposition', [0, 0, 1, 1]);
+	surf(x,y,z);
+	axis('tight')
+	zlim([0, 1]);
+	caption = sprintf('Frame #%d of %d, t = %.1f', frameIndex, numberOfFrames, t(frameIndex));
+	title(caption, 'FontSize', 15);
+	drawnow;
 	thisFrame = getframe(gca);
 	% Write this frame out to a new video file.
 %  	writeVideo(writerObj, thisFrame);
 	myMovie(frameIndex) = thisFrame;
-    
-end;
+end
+% close(writerObj);
+
 %==============================================================================================
 % See if they want to replay the movie.
 message = sprintf('Done creating movie\nDo you want to play it?');
@@ -194,7 +103,7 @@ if strcmpi(button, 'yes')
 	writerObj = VideoWriter(fullFileName, profile);
 	open(writerObj);
 	% Write out all the frames.
-	%numberOfFrames = length(myMovie);
+	numberOfFrames = length(myMovie);
 	for frameNumber = 1 : numberOfFrames 
 	   writeVideo(writerObj, myMovie(frameNumber));
 	end
@@ -206,8 +115,5 @@ if strcmpi(button, 'yes')
 	uiwait(helpdlg(message));
 else
 	uiwait(helpdlg('Done with demo!'));
-end
-
-
 end
 
