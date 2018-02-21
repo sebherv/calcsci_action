@@ -11,7 +11,7 @@ SV_TITLE = "Sillage sur un écoulement à Fr = 0.32";
 
 
 length = 10;
-width = 5;
+width = 10;
 res = 80;
 du = 1;
 dv = 0;

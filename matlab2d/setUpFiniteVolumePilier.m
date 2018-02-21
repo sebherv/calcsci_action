@@ -132,7 +132,7 @@ while t < tmax
     zlim([0 2.5]);
     daspect([1 1 1]);
     %view(135- 30 * t,30-20 * sin(t))
-    %view(135,30)
+    view(135,30)
     shading interp
     
     title({SV_TITLE sprintf("t = %.2f s", t)});
