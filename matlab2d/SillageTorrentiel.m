@@ -7,13 +7,13 @@ global SV_DROP_AT
 global SV_FN_PERFORM
 global SV_PILIER
 SV_FN_PERFORM = false;
-SV_TITLE = "Sillage sur un écoulement à Fr = 0.32";
+SV_TITLE = "Sillage sur un écoulement à Fr = 1.59";
 
 
 length = 10;
-width = 5;
+width = 10;
 res = 80;
-du = 1;
+du = 5;
 dv = 0;
 tmax = 10;
 

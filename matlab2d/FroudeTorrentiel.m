@@ -5,7 +5,7 @@ clear, close all;
 
 global SV_TITLE
 global SV_DROP_AT
-SV_TITLE = "Effet d'une goutte sur un écoulement à Fr = 0.32";
+SV_TITLE = "Effet d'une goutte sur un écoulement à Fr = 1.59";
 SV_DROP_AT = 0.2;
 
 length = 5;
